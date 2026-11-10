@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Buggy Race</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="hud-left">
+      <div class="fuel-pod">
+        <span class="fuel-ico"></span>
+        <div class="fuel-track"><div id="fuelFill"></div></div>
+      </div>
+      <div class="hud-coins"><span class="coin"></span><span id="hudCoins">0</span></div>
+    </div>
+    <div class="hud-right">
+      <div class="dist-box">
+        <div class="dist-main"><span id="hudDist">0</span><small>m</small></div>
+        <div class="dist-best">BEST <span id="hudBest">0</span> m</div>
+      </div>
+      <button id="pauseBtn" class="icon-btn pause-btn" aria-label="Pause">II</button>
+    </div>
+  </div>
+
+  <div id="controls" class="hidden">
+    <button id="btnBrake" class="pedal pedal-brake" aria-label="Brake">
+      <span class="pedal-lines"></span>
+      <span class="pedal-label">BRAKE</span>
+    </button>
+    <button id="btnGas" class="pedal pedal-gas" aria-label="Gas">
+      <span class="pedal-lines"></span>
+      <span class="pedal-label">GAS</span>
+    </button>
+  </div>
+
+  <div id="screens">
+
+    <section id="menuScreen" class="screen menu-screen">
+      <div class="menu-top">
+        <div class="brand">
+          <h1 class="title">BUGGY<span>RACE</span></h1>
+          <p class="subtitle">HILL CLIMB MAYHEM</p>
+        </div>
+        <div class="coin-pill"><span class="coin"></span><span class="coin-value">0</span></div>
+      </div>
+
+      <div class="menu-bottom">
+        <div class="stage-chip">
+          <span class="dot"></span>
+          <span id="menuStageName">Sunset Dunes</span>
+          <span class="best-chip">BEST <b id="menuBest">0 m</b></span>
+        </div>
+        <button id="playBtn" class="btn btn-primary btn-play">PLAY</button>
+        <div class="menu-row">
+          <button id="stagesBtn" class="btn btn-ghost">STAGES</button>
+          <button id="garageBtn" class="btn btn-ghost">GARAGE</button>
+          <button id="settingsBtn" class="btn btn-ghost btn-square" aria-label="Settings">
+            <span class="gear"></span>
+          </button>
+        </div>
+        <p class="hint">GAS to drive &middot; BRAKE to reverse &middot; Tilt in the air</p>
+      </div>
+    </section>
+
+    <section id="stageScreen" class="screen panel-screen hidden">
+      <div class="panel">
+        <header class="panel-head">
+          <button id="stageBack" class="btn btn-red btn-square back-btn" aria-label="Back">&#10094;</button>
+          <h2>SELECT STAGE</h2>
+          <div class="coin-pill small"><span class="coin"></span><span class="coin-value">0</span></div>
+        </header>
+        <div id="stageGrid" class="stage-grid"></div>
+        <p class="panel-hint">Earn distance to unlock tougher, richer stages.</p>
+      </div>
+    </section>
+
+    <section id="garageScreen" class="screen panel-screen hidden">
+      <div class="panel garage-panel">
+        <header class="panel-head">
+          <button id="garageBack" class="btn btn-red btn-square back-btn" aria-label="Back">&#10094;</button>
+          <h2>GARAGE</h2>
+          <div class="coin-pill small"><span class="coin"></span><span class="coin-value">0</span></div>
+        </header>
+
+        <div class="garage-body">
+          <div class="garage-left">
+            <div class="vehicle-stage">
+              <button id="vehPrev" class="veh-arrow" aria-label="Previous vehicle">&#10094;</button>
+              <canvas id="garagePreview"></canvas>
+              <button id="vehNext" class="veh-arrow" aria-label="Next vehicle">&#10095;</button>
+            </div>
+            <h3 id="garageName" class="vehicle-name">Dune Buggy</h3>
+            <p id="garageDesc" class="vehicle-desc">The classic. Balanced and forgiving.</p>
+            <button id="vehicleAction" class="btn btn-green wide">SELECT</button>
+          </div>
+
+          <div class="garage-right">
+            <div id="upgradeGrid" class="upgrade-grid"></div>
+            <p id="garageLockNote" class="lock-note hidden"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pauseScreen" class="screen panel-screen hidden">
+      <div class="panel narrow">
+        <h2 class="panel-title">PAUSED</h2>
+        <div class="stack">
+          <button id="pauseResume" class="btn btn-green wide">RESUME</button>
+          <button id="pauseRestart" class="btn btn-ghost wide">RESTART</button>
+          <button id="pauseGarage" class="btn btn-ghost wide">GARAGE</button>
+          <button id="pauseMenu" class="btn btn-red wide">MAIN MENU</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameOverScreen" class="screen panel-screen hidden">
+      <div class="panel narrow">
+        <div id="goTitle" class="go-title">DRIVER DOWN</div>
+        <div id="goNewBest" class="new-best hidden">NEW BEST!</div>
+        <div class="go-stats">
+          <div class="go-row"><span>DISTANCE</span><b id="goDistance">0 m</b></div>
+          <div class="go-row"><span>COINS</span><b id="goCoins">+0</b></div>
+          <div class="go-row"><span>STAGE BONUS</span><b id="goBonus">x1.00</b></div>
+          <div class="go-row total"><span>TOTAL</span><b id="goTotal">+0</b></div>
+        </div>
+        <div id="goBestLine" class="go-best">BEST: 0 m</div>
+        <div class="row gap">
+          <button id="goRetry" class="btn btn-green grow">RETRY</button>
+          <button id="goGarage" class="btn btn-ghost grow">GARAGE</button>
+        </div>
+        <button id="goMenu" class="btn btn-red wide">MAIN MENU</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="settingsModal" class="hidden">
+    <div id="settingsScrim" class="modal-scrim"></div>
+    <div class="panel settings-panel">
+      <header class="panel-head">
+        <h2>SETTINGS</h2>
+        <button id="settingsClose" class="btn btn-red btn-square" aria-label="Close">&#10005;</button>
+      </header>
+      <div class="setting-row">
+        <span>Sound effects</span>
+        <button id="sfxToggle" class="toggle on">ON</button>
+      </div>
+      <div class="setting-row">
+        <span>Music</span>
+        <button id="musicToggle" class="toggle on">ON</button>
+      </div>
+      <div class="setting-row">
+        <span>Graphics</span>
+        <select id="qualitySelect" class="select">
+          <option value="auto">Auto</option>
+          <option value="high">High</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <span>Fullscreen</span>
+        <button id="fullscreenBtn" class="btn btn-ghost small">TOGGLE</button>
+      </div>
+      <button id="resetBtn" class="btn btn-red wide">RESET PROGRESS</button>
+      <p class="panel-hint">Tip: play in landscape for the best view.</p>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+</div>
+
+<script src="libs/matter.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/terrain.js"></script>
+<script src="js/vehicle.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/core.js"></script>
+</body>
+</html>
