@@ -37,7 +37,6 @@
       owned: ["dune"],
       selectedVehicle: "dune",
       selectedStage: "dunes",
-      difficulty: "normal",
       settings: { sfx: true, music: true, quality: "auto" }
     };
   }
@@ -64,7 +63,6 @@
         }
       }
     }
-    if (BR.DIFFICULTY[data.difficulty]) base.difficulty = data.difficulty;
     if (data.settings) {
       base.settings.sfx = !!data.settings.sfx;
       base.settings.music = !!data.settings.music;
@@ -150,8 +148,6 @@
     if (!menuTerrain[stage.id]) menuTerrain[stage.id] = new BR.Terrain(stage, null);
     return menuTerrain[stage.id];
   };
-  A.clearMenuTerrain = function () { menuTerrain = {}; };
-  A.getDifficulty = function () { return BR.getDifficulty(); };
 
   A.applyQuality = function () {
     var q = A.save.settings.quality;
@@ -270,7 +266,6 @@
     var stage = A.getStage(A.save.selectedStage);
     var def = A.getVehicle(A.save.selectedVehicle);
     var upg = A.getUpgrades(def.id);
-    var diffCfg = A.getDifficulty();
 
     A.engine = Engine.create({
       positionIterations: 8,
@@ -293,12 +288,12 @@
     A.car.update(1 / 60, A.terrain);
 
     A.run = {
-      fuel: diffCfg.startFuel, coins: 0, dist: 0, startX: sx,
-      best: A.getBest(stage.id), stage: stage, def: def, diff: diffCfg,
+      fuel: 100, coins: 0, dist: 0, startX: sx,
+      best: A.getBest(stage.id), stage: stage, def: def,
       over: false, overReason: "", overTimer: 0, overShown: false,
       stopTimer: 0, emptyTimer: 0, flipTimer: 0,
-      airTime: 0, airPeak: 0, angleAcc: 0, lastAngle: A.car.chassis.angle,
-      maxSpeed: 0, maxX: sx, respawnTimer: 0
+      airTime: 0, angleAcc: 0, lastAngle: A.car.chassis.angle,
+      maxSpeed: 0
     };
 
     A.cam.x = A.car.chassis.position.x + 60;
@@ -311,12 +306,6 @@
     A.audio.startEngine();
     A.audio.setSfx(A.save.settings.sfx);
     A.audio.setMusic(A.save.settings.music);
-
-    var hd = A.el("hudDiff");
-    if (hd) {
-      hd.textContent = diffCfg.name.toUpperCase();
-      hd.className = "hud-diff " + diffCfg.id;
-    }
 
     A.updateHUD(true);
     A.updateCoinsUI();
@@ -348,8 +337,7 @@
     var stage = run.stage;
     var dist = Math.max(0, Math.round(run.dist));
     var prevBest = A.getBest(stage.id);
-    var diffBonus = run.diff ? run.diff.bonus : 1;
-    var total = Math.round(run.coins * stage.bonus * diffBonus);
+    var total = Math.round(run.coins * stage.bonus);
     A.save.coins += total;
     if (dist > prevBest) A.save.best[stage.id] = dist;
     A.persist();
@@ -357,7 +345,7 @@
     A.el("goTitle").textContent = run.overReason === "crash" ? "DRIVER DOWN" : "OUT OF FUEL";
     A.el("goDistance").textContent = dist + " m";
     A.el("goCoins").textContent = "+" + fmt(run.coins);
-    A.el("goBonus").textContent = "x" + (stage.bonus * diffBonus).toFixed(2);
+    A.el("goBonus").textContent = "x" + stage.bonus.toFixed(2);
     A.el("goTotal").textContent = "+" + fmt(total);
 
     var nb = A.el("goNewBest");
@@ -401,7 +389,7 @@
       if (!can.alive) continue;
       if (Math.abs(can.x - cx) < 38 && Math.abs(can.y - cy) < 52) {
         can.alive = false;
-        run.fuel = Math.min(100, run.fuel + 40);
+        run.fuel = Math.min(100, run.fuel + 42);
         A.particles.sparkle(can.x, can.y, 12, "#8ef0c0");
         A.audio.fuel();
         A.showToast("+FUEL");
@@ -435,8 +423,8 @@
     Engine.update(A.engine, dt * 1000);
     car.update(dt, terr);
 
-    /* fuel - burns quickly, harder difficulties burn faster */
-    var drain = (gas ? 2.6 : (brake ? 0.95 : 0.62)) * run.diff.drain;
+    /* fuel */
+    var drain = gas ? 1.45 : (brake ? 0.42 : 0.32);
     run.fuel = BR.clamp(run.fuel - drain * dt, 0, 100);
     if (run.fuel <= 0) {
       run.emptyTimer += dt;
@@ -449,18 +437,6 @@
     run.maxSpeed = Math.max(run.maxSpeed, car.speed());
 
     collectPickups();
-
-    /* driving back respawns fresh coins and fuel behind you */
-    if (car.chassis.position.x > run.maxX) run.maxX = car.chassis.position.x;
-    if (run.respawnTimer > 0) run.respawnTimer -= dt;
-    if (car.chassis.position.x < run.maxX - 220) {
-      if (run.respawnTimer <= 0) {
-        if (terr.respawnBehind(car.chassis.position.x)) A.showToast("FRESH PICKUPS BEHIND");
-        run.respawnTimer = 0.7;
-      }
-    } else {
-      run.respawnTimer = 0;
-    }
 
     /* effects */
     var speedNow = car.speed();
@@ -484,29 +460,23 @@
       A.audio.land(car.landImpact);
     }
 
-    /* air tricks - big hills launch you for fly/dive points */
+    /* air tricks */
     if (!car.onGround) {
       run.angleAcc += normAngle(car.chassis.angle - run.lastAngle);
       run.airTime += dt;
-      var airH = terr.heightAt(car.chassis.position.x) - car.chassis.position.y;
-      if (airH > run.airPeak) run.airPeak = airH;
     } else {
       if (car.landImpact > 0 && run.airTime > 0.55) {
         var flips = Math.floor(Math.abs(run.angleAcc) / BR.TAU);
-        var heightPts = Math.round(run.airPeak * 0.12);
-        var bonus = Math.round(run.airTime * 18) + flips * 45 + heightPts;
+        var bonus = Math.round(run.airTime * 10) + flips * 25;
         if (bonus > 0) {
           run.coins += bonus;
-          A.particles.sparkle(car.chassis.position.x, car.chassis.position.y, 10 + Math.min(20, flips * 6), "#8ef0c0");
+          A.particles.sparkle(car.chassis.position.x, car.chassis.position.y, 10, "#8ef0c0");
           A.audio.blip(760 + flips * 120, 0.18, "triangle", 0.14, 1200);
-          var label = flips > 0 ? (flips + "x FLIP  ") :
-            (run.airTime > 1.3 || run.airPeak > 170 ? "BIG AIR  " : "AIR  ");
-          A.showToast(label + "+" + bonus);
+          A.showToast((flips > 0 ? flips + "x FLIP  " : "AIR  ") + "+" + bonus);
         }
       }
       run.airTime = 0;
       run.angleAcc = 0;
-      run.airPeak = 0;
     }
     run.lastAngle = car.chassis.angle;
 

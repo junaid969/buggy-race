@@ -13,7 +13,7 @@
       id: "dune", name: "Dune Buggy", price: 0,
       desc: "The classic. Balanced and forgiving.",
       bodyW: 76, bodyH: 24, wheelR: 17, rearX: -27, frontX: 28, wheelY: 20,
-      density: 0.0034, torque: 0.2, maxAngVel: 0.69, airTorque: 0.75,
+      density: 0.0034, torque: 0.15, maxAngVel: 0.6, airTorque: 0.75,
       grip: 1.25, suspStiff: 0.065, suspDamp: 0.075,
       body: "#f6b41c", body2: "#cd8407", accent: "#ffd766", cage: "#33333c",
       rim: "#f3c74e", seat: "#7d4a26", shirt: "#e0432e", helmet: "#3fae4a",
@@ -23,7 +23,7 @@
       id: "truck", name: "Monster Truck", price: 2500,
       desc: "Huge wheels. Nothing stops it.",
       bodyW: 84, bodyH: 30, wheelR: 27, rearX: -32, frontX: 33, wheelY: 24,
-      density: 0.0032, torque: 0.47, maxAngVel: 0.6, airTorque: 1.7,
+      density: 0.0032, torque: 0.35, maxAngVel: 0.52, airTorque: 1.7,
       grip: 1.45, suspStiff: 0.07, suspDamp: 0.085,
       body: "#e2452f", body2: "#a82a1a", accent: "#ff8f6e", cage: "#c9ccd4",
       rim: "#b9c0cc", seat: "#5a3a22", shirt: "#2f6fd0", helmet: "#f4f4f4",
@@ -33,41 +33,11 @@
       id: "rally", name: "Rally Buggy", price: 6000,
       desc: "Light, quick and glued to the road.",
       bodyW: 72, bodyH: 20, wheelR: 15, rearX: -26, frontX: 28, wheelY: 16,
-      density: 0.0038, torque: 0.185, maxAngVel: 0.8, airTorque: 0.8,
+      density: 0.0038, torque: 0.135, maxAngVel: 0.7, airTorque: 0.8,
       grip: 1.6, suspStiff: 0.08, suspDamp: 0.08,
       body: "#1eb7e6", body2: "#0d7ea6", accent: "#8ee9ff", cage: "#22262e",
       rim: "#d8e6ef", seat: "#33404d", shirt: "#f5c518", helmet: "#f5f5f5",
       headOff: { x: 3, y: -25 }
-    },
-    {
-      id: "muscle", name: "Muscle Car", price: 9000,
-      desc: "Low, loud and built for raw straight-line speed.",
-      bodyW: 84, bodyH: 21, wheelR: 16, rearX: -29, frontX: 31, wheelY: 17,
-      density: 0.0036, torque: 0.23, maxAngVel: 0.86, airTorque: 0.95,
-      grip: 1.45, suspStiff: 0.072, suspDamp: 0.076,
-      body: "#e8392b", body2: "#8f130d", accent: "#ff9a80", cage: "#191b21",
-      rim: "#e8eef5", seat: "#2a1b12", shirt: "#f5c518", helmet: "#151515",
-      headOff: { x: 4, y: -24 }
-    },
-    {
-      id: "sandstorm", name: "Sand Storm", price: 14000,
-      desc: "Desert-born monster with huge grip and torque.",
-      bodyW: 80, bodyH: 26, wheelR: 22, rearX: -31, frontX: 32, wheelY: 23,
-      density: 0.0031, torque: 0.44, maxAngVel: 0.72, airTorque: 1.5,
-      grip: 1.7, suspStiff: 0.076, suspDamp: 0.09,
-      body: "#f08a1c", body2: "#b45908", accent: "#ffd08a", cage: "#3a2a16",
-      rim: "#d9b25a", seat: "#4a2c14", shirt: "#2f6fd0", helmet: "#f2f2f2",
-      headOff: { x: 2, y: -31 }
-    },
-    {
-      id: "phantom", name: "Phantom X", price: 22000,
-      desc: "Neon rocket. Insane top speed, knife-edge handling.",
-      bodyW: 78, bodyH: 18, wheelR: 15, rearX: -28, frontX: 30, wheelY: 15,
-      density: 0.0039, torque: 0.27, maxAngVel: 0.98, airTorque: 1.05,
-      grip: 1.65, suspStiff: 0.083, suspDamp: 0.08,
-      body: "#7b2bff", body2: "#2a0a66", accent: "#d59bff", cage: "#120a24",
-      rim: "#b9e4ff", seat: "#1a0f33", shirt: "#ff2fb0", helmet: "#101018",
-      headOff: { x: 4, y: -23 }
     }
   ];
 
@@ -410,30 +380,6 @@
       ctx.fillStyle = "#222"; roundRect(ctx, -hw * 0.5, -hh - 36, hw * 1.1, 6, 3); ctx.fill();
       ctx.fillStyle = "#fff6c4"; for (var L = 0; L < 4; L++) ctx.fillRect(-hw * 0.4 + L * 18, -hh - 35, 8, 4);
       ctx.fillStyle = "rgba(0,0,0,0.35)"; ctx.fillRect(-hw + 4, hh - 2, w - 8, 5);
-    } else if (d.id === "muscle") {
-      ctx.fillStyle = "rgba(255,255,255,0.9)";
-      ctx.fillRect(hw * 0.05, -hh - 3, 6, hh + 8);
-      ctx.fillRect(-hw * 0.35, -hh - 3, 6, hh + 8);
-      ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(-hw + 4, hh - 2, w - 8, 5);
-      ctx.fillStyle = d.body2; ctx.fillRect(-hw - 8, -hh - 4, 6, 12);
-    } else if (d.id === "sandstorm") {
-      ctx.fillStyle = "#2a2114"; roundRect(ctx, -hw * 0.7, -hh - 30, hw * 1.2, 6, 3); ctx.fill();
-      ctx.fillStyle = "#ffe27a"; for (var S = 0; S < 3; S++) ctx.fillRect(-hw * 0.55 + S * 22, -hh - 29, 10, 4);
-      ctx.fillStyle = "rgba(0,0,0,0.35)"; ctx.fillRect(-hw + 4, hh - 2, w - 8, 5);
-    } else if (d.id === "phantom") {
-      ctx.save();
-      ctx.globalAlpha = 0.55;
-      var glowG = ctx.createLinearGradient(0, hh, 0, hh + 16);
-      glowG.addColorStop(0, "rgba(255,47,176,0.8)");
-      glowG.addColorStop(1, "rgba(255,47,176,0)");
-      ctx.fillStyle = glowG;
-      ctx.beginPath();
-      ctx.ellipse(0, hh + 6, hw * 0.9, 9, 0, 0, TAU);
-      ctx.fill();
-      ctx.restore();
-      ctx.fillStyle = "#7be7ff"; ctx.fillRect(hw * 0.2, -hh - 3, hw * 0.6, 3);
-      ctx.fillStyle = d.body2; ctx.fillRect(-hw - 10, -hh - 22, 18, 4);
-      ctx.fillRect(-hw - 10, -hh - 22, 4, 12);
     } else {
       ctx.fillStyle = "#3a2a14"; ctx.fillRect(hw + 4, hh - 3, 10, 5);
     }

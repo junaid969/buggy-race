@@ -222,40 +222,6 @@ html, body {
 .best-chip b { color: #ffe27a; }
 .menu-row { display: flex; gap: 10px; }
 .menu-row .btn:not(.btn-square) { flex: 1; }
-.diff-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  align-self: center;
-  padding: 5px 8px 5px 14px;
-  border-radius: 999px;
-  background: rgba(9, 14, 25, .72);
-  border: 2px solid rgba(160, 195, 255, .18);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
-}
-.diff-label {
-  font-size: clamp(9px, 2.6vw, 12px);
-  font-weight: 800;
-  letter-spacing: .12em;
-  color: #9fb4d8;
-  margin-right: 4px;
-}
-.diff-btn {
-  border: 0;
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: clamp(9px, 2.7vw, 12px);
-  font-weight: 900;
-  letter-spacing: .06em;
-  color: #c3d4f0;
-  background: rgba(255, 255, 255, .06);
-  cursor: pointer;
-  transition: transform .08s ease, background .12s ease, color .12s ease;
-}
-.diff-btn:active { transform: translateY(1px); }
-.diff-btn.selected[data-diff="easy"] { background: linear-gradient(180deg, #5ce07a, #2f9e4a); color: #06240e; }
-.diff-btn.selected[data-diff="normal"] { background: linear-gradient(180deg, #ffd45e, #e0a012); color: #2a1c00; }
-.diff-btn.selected[data-diff="hard"] { background: linear-gradient(180deg, #ff7a6a, #c92e1f); color: #2a0500; }
 .hint {
   margin: 2px 0 0;
   text-align: center;
@@ -711,21 +677,6 @@ html, body {
   box-shadow: 0 5px 14px rgba(0, 0, 0, .35);
 }
 .hud-coins .coin { width: 17px; height: 17px; }
-.hud-diff {
-  align-self: flex-start;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .12em;
-  color: #ffe9a8;
-  background: rgba(8, 13, 23, .72);
-  border: 2px solid rgba(160, 195, 255, .25);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
-}
-.hud-diff.easy { color: #9dffb4; border-color: rgba(110, 240, 120, .4); }
-.hud-diff.normal { color: #ffe08a; border-color: rgba(255, 212, 94, .4); }
-.hud-diff.hard { color: #ff9a8a; border-color: rgba(255, 110, 90, .45); }
 .hud-right { display: flex; align-items: flex-start; gap: 8px; }
 .dist-box { text-align: right; text-shadow: 0 2px 6px rgba(0, 0, 0, .7); }
 .dist-main {

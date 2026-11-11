@@ -68,8 +68,6 @@
     this.coins = [];
     this.fuelCans = [];
     this._buildQueue = [];
-    this._respawnTick = 0;
-    this.rough = BR.getDifficulty().rough;
   }
 
   Terrain.CHUNK_W = CHUNK_W;
@@ -84,20 +82,8 @@
     h += Math.sin(x * 0.00105 + s.seed * 0.001) * s.amp * 0.16;
     h += n.fbm(x * 0.0034 + 57.3, 2) * s.amp * 0.13;
     var flat = BR.clamp((x - 80) / 520, 0, 1);
-    h *= flat * this.rough;
+    h *= flat;
     return h;
-  };
-
-  /* flattest point in a range, so fuel cans sit on level ground */
-  Terrain.prototype._flatSpot = function (rng, x0, width) {
-    var bestX = x0 + width * 0.5;
-    var bestSlope = Infinity;
-    for (var i = 0; i < 9; i++) {
-      var x = x0 + 80 + rng() * (width - 160);
-      var sl = Math.abs(this.slopeAt(x));
-      if (sl < bestSlope) { bestSlope = sl; bestX = x; }
-    }
-    return bestX;
   };
 
   Terrain.prototype.slopeAt = function (x) {
@@ -180,9 +166,9 @@
       }
     }
 
-    /* fuel cans every other chunk, placed on flat ground */
-    if (idx > 0 && idx % 2 === 0) {
-      var fx = this._flatSpot(rng, x0, CHUNK_W);
+    /* fuel cans every 4th chunk */
+    if (idx > 0 && idx % 4 === 0) {
+      var fx = x0 + 120 + rng() * (CHUNK_W - 240);
       var fy = this.heightAt(fx);
       var can = { x: fx, y: fy - 20, r: 19, alive: true, chunk: idx, bob: rng() * BR.TAU };
       chunk.fuel.push(can);
@@ -217,42 +203,6 @@
       var idx = this.chunks[key].idx;
       if (idx < from - 1 || idx > to + 1) this._removeChunk(idx);
     }
-  };
-
-  /* when the player drives back, respawn fresh coins/fuel in visited ground */
-  Terrain.prototype.respawnBehind = function (carX) {
-    var limit = carX - 260;
-    var changed = false;
-    for (var key in this.chunks) {
-      var ch = this.chunks[key];
-      if ((ch.idx + 1) * CHUNK_W > limit) continue;
-      var rng = BR.mulberry32((this.stage.seed ^ (ch.idx * 2654435761) ^ (++this._respawnTick)) >>> 0);
-      var i;
-      for (i = 0; i < ch.coins.length; i++) {
-        var co = ch.coins[i];
-        if (co.alive) continue;
-        var nx = ch.idx * CHUNK_W + 70 + rng() * (CHUNK_W - 140);
-        co.x = nx;
-        co.y = this.heightAt(nx) - (42 + rng() * 46);
-        co.val = rng() < 0.16 ? 10 : 5;
-        co.phase = rng() * BR.TAU;
-        co.alive = true;
-        if (this.coins.indexOf(co) < 0) this.coins.push(co);
-        changed = true;
-      }
-      for (i = 0; i < ch.fuel.length; i++) {
-        var can = ch.fuel[i];
-        if (can.alive) continue;
-        var fx = this._flatSpot(rng, ch.idx * CHUNK_W, CHUNK_W);
-        can.x = fx;
-        can.y = this.heightAt(fx) - 20;
-        can.bob = rng() * BR.TAU;
-        can.alive = true;
-        if (this.fuelCans.indexOf(can) < 0) this.fuelCans.push(can);
-        changed = true;
-      }
-    }
-    return changed;
   };
 
   Terrain.prototype.chunksInView = function (camX, viewW, margin) {

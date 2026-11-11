@@ -61,21 +61,6 @@
       });
     }
 
-    if (el("diffRow")) {
-      el("diffRow").addEventListener("click", function (e) {
-        var btn = e.target.closest(".diff-btn");
-        if (!btn) return;
-        var id = btn.getAttribute("data-diff");
-        if (!BR.DIFFICULTY[id] || A.save.difficulty === id) return;
-        A.save.difficulty = id;
-        A.persist();
-        A.clearMenuTerrain();
-        A.audio.click();
-        updateDifficultyUI();
-        toast("Difficulty: " + BR.DIFFICULTY[id].name);
-      });
-    }
-
     bind("vehPrev", function () { cycleVehicle(-1); });
     bind("vehNext", function () { cycleVehicle(1); });
     bind("vehicleAction", function () { vehicleAction(); });
@@ -136,17 +121,7 @@
     renderGarage();
     updateSettingsUI();
     updateMenuMeta();
-    updateDifficultyUI();
   };
-
-  function updateDifficultyUI() {
-    if (!A) A = BR.App;
-    var id = (A.save && A.save.difficulty) || "normal";
-    var btns = document.querySelectorAll(".diff-btn");
-    for (var i = 0; i < btns.length; i++) {
-      btns[i].classList.toggle("selected", btns[i].getAttribute("data-diff") === id);
-    }
-  }
 
   function bind(id, fn) {
     var node = el(id);
