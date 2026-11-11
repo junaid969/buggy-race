@@ -19,6 +19,7 @@
         <div class="fuel-track"><div id="fuelFill"></div></div>
       </div>
       <div class="hud-coins"><span class="coin"></span><span id="hudCoins">0</span></div>
+      <div class="hud-diff normal" id="hudDiff">NORMAL</div>
     </div>
     <div class="hud-right">
       <div class="dist-box">
@@ -30,6 +31,7 @@
   </div>
 
   <div id="controls" class="hidden">
+    <div class="gauges"><div class="gauge"><i id="needleRpm"></i><span>RPM</span></div><div class="gauge"><i id="needleSpd"></i><span>SPEED</span></div></div>
     <button id="btnBrake" class="pedal pedal-brake" aria-label="Brake">
       <span class="pedal-lines"></span>
       <span class="pedal-label">BRAKE</span>
@@ -57,6 +59,12 @@
           <span id="menuStageName">Sunset Dunes</span>
           <span class="best-chip">BEST <b id="menuBest">0 m</b></span>
         </div>
+        <div class="diff-row" id="diffRow">
+          <span class="diff-label">DIFFICULTY</span>
+          <button class="diff-btn" data-diff="easy">EASY</button>
+          <button class="diff-btn selected" data-diff="normal">NORMAL</button>
+          <button class="diff-btn" data-diff="hard">HARD</button>
+        </div>
         <button id="playBtn" class="btn btn-primary btn-play">PLAY</button>
         <div class="menu-row">
           <button id="stagesBtn" class="btn btn-ghost">STAGES</button>
@@ -65,6 +73,7 @@
             <span class="gear"></span>
           </button>
         </div>
+        <div class="snd-row"><button id="sfxQuick" class="btn btn-blue btn-square" aria-label="Sound">&#9835;</button><button id="musicQuick" class="btn btn-blue btn-square" aria-label="Music">&#9836;</button></div>
         <p class="hint">GAS to drive &middot; BRAKE to reverse &middot; Tilt in the air</p>
       </div>
     </section>
@@ -85,7 +94,7 @@
       <div class="panel garage-panel">
         <header class="panel-head">
           <button id="garageBack" class="btn btn-red btn-square back-btn" aria-label="Back">&#10094;</button>
-          <h2>GARAGE</h2>
+          <h2>SELECT VEHICLE</h2>
           <div class="coin-pill small"><span class="coin"></span><span class="coin-value">0</span></div>
         </header>
 
@@ -99,11 +108,13 @@
             <h3 id="garageName" class="vehicle-name">Dune Buggy</h3>
             <p id="garageDesc" class="vehicle-desc">The classic. Balanced and forgiving.</p>
             <button id="vehicleAction" class="btn btn-green wide">SELECT</button>
+            <div class="stage-label" id="garageStage"></div>
           </div>
 
           <div class="garage-right">
             <div id="upgradeGrid" class="upgrade-grid"></div>
             <p id="garageLockNote" class="lock-note hidden"></p>
+            <div class="row gap garage-foot"><button id="garageBack2" class="btn btn-red grow">BACK</button><button id="garageStart" class="btn btn-green grow">START</button></div>
           </div>
         </div>
       </div>

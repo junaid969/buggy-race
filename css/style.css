@@ -222,6 +222,40 @@ html, body {
 .best-chip b { color: #ffe27a; }
 .menu-row { display: flex; gap: 10px; }
 .menu-row .btn:not(.btn-square) { flex: 1; }
+.diff-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  padding: 5px 8px 5px 14px;
+  border-radius: 999px;
+  background: rgba(9, 14, 25, .72);
+  border: 2px solid rgba(160, 195, 255, .18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
+}
+.diff-label {
+  font-size: clamp(9px, 2.6vw, 12px);
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: #9fb4d8;
+  margin-right: 4px;
+}
+.diff-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: clamp(9px, 2.7vw, 12px);
+  font-weight: 900;
+  letter-spacing: .06em;
+  color: #c3d4f0;
+  background: rgba(255, 255, 255, .06);
+  cursor: pointer;
+  transition: transform .08s ease, background .12s ease, color .12s ease;
+}
+.diff-btn:active { transform: translateY(1px); }
+.diff-btn.selected[data-diff="easy"] { background: linear-gradient(180deg, #5ce07a, #2f9e4a); color: #06240e; }
+.diff-btn.selected[data-diff="normal"] { background: linear-gradient(180deg, #ffd45e, #e0a012); color: #2a1c00; }
+.diff-btn.selected[data-diff="hard"] { background: linear-gradient(180deg, #ff7a6a, #c92e1f); color: #2a0500; }
 .hint {
   margin: 2px 0 0;
   text-align: center;
@@ -677,6 +711,21 @@ html, body {
   box-shadow: 0 5px 14px rgba(0, 0, 0, .35);
 }
 .hud-coins .coin { width: 17px; height: 17px; }
+.hud-diff {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  color: #ffe9a8;
+  background: rgba(8, 13, 23, .72);
+  border: 2px solid rgba(160, 195, 255, .25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+}
+.hud-diff.easy { color: #9dffb4; border-color: rgba(110, 240, 120, .4); }
+.hud-diff.normal { color: #ffe08a; border-color: rgba(255, 212, 94, .4); }
+.hud-diff.hard { color: #ff9a8a; border-color: rgba(255, 110, 90, .45); }
 .hud-right { display: flex; align-items: flex-start; gap: 8px; }
 .dist-box { text-align: right; text-shadow: 0 2px 6px rgba(0, 0, 0, .7); }
 .dist-main {
@@ -826,3 +875,52 @@ html, body {
   .new-best { animation: none; }
   #fuelFill.low { animation: none; }
 }
+
+/* ======== v2 restyle: chunky cartoon look ======== */
+.title, .panel-head h2, .vehicle-name, .stage-name, .go-title, .dist-main, .panel-title {
+  -webkit-text-stroke: 0; paint-order: stroke fill; text-shadow: 0 3px 0 #2a1500;
+}
+.title { -webkit-text-stroke: 7px #4a2208; background: none; color: #ffc933; font-style: normal; letter-spacing: .01em; filter: drop-shadow(0 6px 0 rgba(0,0,0,.35)); }
+.title span { background: none; color: #ff4b34; -webkit-text-stroke: 7px #4a1208; }
+.subtitle { color: #fff; -webkit-text-stroke: 3px #1b3a66; paint-order: stroke fill; letter-spacing: .3em; }
+.btn { border: 3px solid #101624; box-shadow: 0 6px 0 #0a0f1a, inset 0 3px 0 rgba(255,255,255,.35); text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.btn-primary, .btn-green { background: linear-gradient(180deg, #7be04c, #2fa626); color: #fff; -webkit-text-stroke: 4px #0e3a0b; paint-order: stroke fill; }
+.btn-red { background: linear-gradient(180deg, #ff6b57, #d12a18); -webkit-text-stroke: 4px #5a0f06; paint-order: stroke fill; }
+.btn-blue, .btn-ghost { background: linear-gradient(180deg, #4f93e8, #2a5fc0); color: #fff; }
+.btn-blue.off { filter: grayscale(.9) brightness(.7); }
+.btn-gold { background: linear-gradient(180deg, #ffd34d, #f08e0b); }
+.snd-row { display: flex; gap: 10px; }
+.panel { background: linear-gradient(180deg, #34425f, #1a2338); border: 3px solid #0d1322; border-radius: 24px; }
+.panel-head h2 { color: #fff; -webkit-text-stroke: 5px #0d1322; text-align: left; font-size: clamp(20px, 5.5vw, 30px); }
+.vehicle-stage { background: linear-gradient(180deg, #3b4a66, #222c42); border: 3px solid #0d1322; }
+.veh-arrow { background: linear-gradient(180deg, #ffc233, #e07d0a); border: 3px solid #0d1322; color: #fff; }
+.vehicle-name { color: #ffd23d; -webkit-text-stroke: 5px #3a2400; font-style: normal; }
+.stage-label { text-align: center; margin-top: 8px; font-size: 12px; font-weight: 800; letter-spacing: .1em; color: #9fd8ff; }
+.upg-card { border: 3px solid #0d1322; background: linear-gradient(180deg, #46557a, #2b3652); }
+.upg-card .upg-cost { background: linear-gradient(180deg, #ffb41f, #e08a07); color: #fff; -webkit-text-stroke: 3px #5a3300; paint-order: stroke fill; border: 2px solid #0d1322; border-radius: 10px; padding: 6px 8px; margin-top: 4px; font-size: 15px; }
+.garage-foot { margin-top: 14px; }
+#garageBack { display: none; }
+.stage-card { border: 3px solid #0d1322; }
+.stage-card.selected { border-color: #ffd23d; }
+/* HUD */
+.fuel-pod { background: #4c6670; border: 3px solid #0d1322; border-radius: 16px; width: min(260px, 50vw); padding: 7px 10px; }
+.fuel-track { height: 18px; border-radius: 6px; background: #121c22; position: relative; }
+#fuelFill { border-radius: 4px; background: linear-gradient(180deg, #9af070, #3cb028); box-shadow: none; }
+.fuel-track::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 3px), #121c22 calc(10% - 3px) 10%); }
+.hud-coins { background: none; border: 0; box-shadow: none; font-size: 24px; color: #ffd23d; -webkit-text-stroke: 5px #3a2400; paint-order: stroke fill; }
+.hud-coins .coin { width: 26px; height: 26px; }
+.dist-main { color: #fff; -webkit-text-stroke: 7px #1a1a1a; paint-order: stroke fill; }
+.dist-best { color: #ffe36b; -webkit-text-stroke: 3px #1a1a1a; paint-order: stroke fill; }
+.icon-btn { background: #4c6670; border: 3px solid #0d1322; width: 52px; height: 52px; }
+/* pedals: metal plates on poles + gauges */
+#controls { align-items: flex-end; }
+.pedal { width: clamp(84px, 20vw, 118px); height: clamp(70px, 17vw, 96px); margin-bottom: 38px; border-radius: 14px; border: 4px solid #2b3036; background: linear-gradient(180deg, #e9edf2, #aab2bd); color: #555d68; text-shadow: 0 1px 0 #fff; box-shadow: 0 6px 0 #1c2026; }
+.pedal::after { content: ""; position: absolute; left: 50%; top: 100%; width: 22px; height: 40px; transform: translateX(-50%); background: linear-gradient(90deg, #6d757f, #c9d0d8, #6d757f); border: 3px solid #2b3036; border-top: 0; }
+.pedal-brake, .pedal-gas { background: linear-gradient(180deg, #e9edf2, #aab2bd); }
+.pedal-lines { background: repeating-linear-gradient(180deg, #6d757f 0 3px, transparent 3px 8px); opacity: 1; height: 28px; }
+.gauges { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); display: flex; gap: 10px; pointer-events: none; }
+.gauge { position: relative; width: clamp(56px, 15vw, 84px); height: clamp(56px, 15vw, 84px); border-radius: 50%; background: radial-gradient(circle, #fff 55%, #d9dee4); border: 5px solid #2b3036; box-shadow: 0 4px 0 #14171c; }
+.gauge::before { content: ""; position: absolute; inset: 6%; border-radius: 50%; background: conic-gradient(from -120deg, transparent 0 190deg, #e23b2a 190deg 240deg, transparent 240deg); -webkit-mask: radial-gradient(circle, transparent 62%, #000 64%); mask: radial-gradient(circle, transparent 62%, #000 64%); }
+.gauge i { position: absolute; left: 50%; bottom: 50%; width: 3px; height: 38%; margin-left: -1.5px; background: #d2261a; transform-origin: 50% 100%; transform: rotate(-120deg); transition: transform .12s linear; border-radius: 2px; }
+.gauge span { position: absolute; left: 0; right: 0; bottom: 18%; text-align: center; font-size: 9px; font-weight: 900; color: #444; }
+@media (max-height: 460px) and (orientation: landscape) { .gauge { width: 52px; height: 52px; } .pedal { height: 64px; width: 84px; } }

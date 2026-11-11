@@ -26,6 +26,10 @@
 
     bind("stageBack", function () { A.audio.click(); A.gotoMenu(); });
     bind("garageBack", function () { A.audio.click(); A.gotoMenu(); });
+    bind("garageBack2", function () { A.audio.click(); A.gotoMenu(); });
+    bind("garageStart", function () { A.startRun(); });
+    bind("sfxQuick", function () { A.save.settings.sfx = !A.save.settings.sfx; A.persist(); A.audio.setSfx(A.save.settings.sfx); A.audio.click(); updateSettingsUI(); });
+    bind("musicQuick", function () { A.save.settings.music = !A.save.settings.music; A.persist(); A.audio.setMusic(A.save.settings.music); updateSettingsUI(); });
     bind("settingsClose", function () { closeSettings(); });
     bind("settingsScrim", function () { closeSettings(); });
 
@@ -54,6 +58,21 @@
         renderStageScreen();
         updateMenuMeta();
         updateCoinsUI();
+      });
+    }
+
+    if (el("diffRow")) {
+      el("diffRow").addEventListener("click", function (e) {
+        var btn = e.target.closest(".diff-btn");
+        if (!btn) return;
+        var id = btn.getAttribute("data-diff");
+        if (!BR.DIFFICULTY[id] || A.save.difficulty === id) return;
+        A.save.difficulty = id;
+        A.persist();
+        A.clearMenuTerrain();
+        A.audio.click();
+        updateDifficultyUI();
+        toast("Difficulty: " + BR.DIFFICULTY[id].name);
       });
     }
 
@@ -117,7 +136,17 @@
     renderGarage();
     updateSettingsUI();
     updateMenuMeta();
+    updateDifficultyUI();
   };
+
+  function updateDifficultyUI() {
+    if (!A) A = BR.App;
+    var id = (A.save && A.save.difficulty) || "normal";
+    var btns = document.querySelectorAll(".diff-btn");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle("selected", btns[i].getAttribute("data-diff") === id);
+    }
+  }
 
   function bind(id, fn) {
     var node = el(id);
@@ -275,6 +304,7 @@
 
     el("garageName").textContent = def.name;
     el("garageDesc").textContent = def.desc;
+    el("garageStage").textContent = "Stage: " + A.getStage(A.save.selectedStage).name.toUpperCase();
     updateCoinsUI();
 
     var action = el("vehicleAction");
@@ -344,6 +374,8 @@
     var s = A.save.settings;
     setToggle("sfxToggle", s.sfx);
     setToggle("musicToggle", s.music);
+    if (el("sfxQuick")) el("sfxQuick").classList.toggle("off", !s.sfx);
+    if (el("musicQuick")) el("musicQuick").classList.toggle("off", !s.music);
     if (el("qualitySelect")) el("qualitySelect").value = s.quality;
   }
 

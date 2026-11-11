@@ -66,6 +66,18 @@
     return noise;
   };
 
+  BR.DIFFICULTY = {
+    easy:   { id: "easy",   name: "Easy",   rough: 0.82, drain: 0.85, bonus: 0.85, startFuel: 100 },
+    normal: { id: "normal", name: "Normal", rough: 1.0,  drain: 1.0,  bonus: 1.0,  startFuel: 92 },
+    hard:   { id: "hard",   name: "Hard",   rough: 1.28, drain: 1.25, bonus: 1.4,  startFuel: 82 }
+  };
+
+  BR.getDifficulty = function () {
+    var A = root.BR.App;
+    var id = (A && A.save && A.save.difficulty) || "normal";
+    return BR.DIFFICULTY[id] || BR.DIFFICULTY.normal;
+  };
+
   BR.formatNumber = function (n) {
     n = Math.round(n);
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
