@@ -80,7 +80,7 @@
       return Bodies.circle(x, y, d.wheelR, {
         density: 0.0016,
         friction: d.grip * (1 + 0.06 * num(upgrades, "tires")),
-        frictionStatic: d.grip * 2.2,
+        frictionStatic: d.grip * 2.8,
         frictionAir: 0.006,
         restitution: 0.1,
         slop: 0.02,
@@ -142,8 +142,8 @@
         rear.torque += torque;
         if (this.fourWD > 0) front.torque += torque * this.fourWD * 0.95;
       } else if (brake && !gas) {
-        rear.torque -= torque * 0.85;
-        if (this.fourWD > 0) front.torque -= torque * this.fourWD * 0.7;
+        rear.torque -= torque * 1.0;
+        if (this.fourWD > 0) front.torque -= torque * this.fourWD * 0.8;
       }
     } else {
       var t = (gas ? 1 : 0) - (brake ? 1 : 0);
@@ -182,11 +182,46 @@
     this.onGround = nowGround;
     this.airTime = nowGround ? 0 : this.airTime + dt;
 
+    /* keep wheels attached and above ground - fixes vanishing tyres */
+    var cos = Math.cos(this.chassis.angle), sin = Math.sin(this.chassis.angle);
+    var pairs = [
+      { w: rw, lx: d.rearX, ly: d.wheelY },
+      { w: fw, lx: d.frontX, ly: d.wheelY }
+    ];
+    for (var wi = 0; wi < 2; wi++) {
+      var pr = pairs[wi];
+      var ex = this.chassis.position.x + pr.lx * cos - pr.ly * sin;
+      var ey = this.chassis.position.y + pr.lx * sin + pr.ly * cos;
+      var ddx = pr.w.position.x - ex;
+      var ddy = pr.w.position.y - ey;
+      var sep = Math.sqrt(ddx * ddx + ddy * ddy);
+      if (!isFinite(sep) || sep > d.wheelR + 40) {
+        Body.setPosition(pr.w, { x: ex, y: ey });
+        Body.setVelocity(pr.w, { x: this.chassis.velocity.x, y: this.chassis.velocity.y });
+        Body.setAngularVelocity(pr.w, 0);
+      }
+      var gr = terrain.heightAt(pr.w.position.x);
+      if (pr.w.position.y - d.wheelR > gr + 45) {
+        Body.setPosition(pr.w, { x: pr.w.position.x, y: gr - d.wheelR - 3 });
+        Body.setVelocity(pr.w, { x: this.chassis.velocity.x, y: Math.min(0, this.chassis.velocity.y) });
+      }
+    }
+
     /* uprighting torque when nearly flipped and crawling */
     var angle = this.chassis.angle % BR.TAU;
     var tilt = Math.abs(angle);
     if (nowGround && tilt > 1.9 && Math.abs(this.chassis.velocity.x) < 40) {
       this.chassis.torque += (angle > 0 ? -1 : 1) * 0.02;
+    }
+
+    /* gentle self-levelling keeps the buggy planted and controllable */
+    if (nowGround) {
+      var groundAng = Math.atan2(hF - hR, (fw.position.x - rw.position.x) || 1);
+      var err = groundAng - this.chassis.angle;
+      while (err > Math.PI) err -= BR.TAU;
+      while (err < -Math.PI) err += BR.TAU;
+      var align = Math.abs(this.chassis.velocity.x) < 220 ? 0.012 : 0.006;
+      this.chassis.torque += BR.clamp(err, -0.7, 0.7) * align;
     }
   };
 

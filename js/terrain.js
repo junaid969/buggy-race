@@ -78,16 +78,30 @@
     var h = 0;
     h += n.fbm(x * 0.00042 + 11.3, 3) * s.amp;
     h += n.fbm(x * 0.0015 + 301.7, 4) * s.amp * 0.32;
-    h += n(x * 0.0058 + 917.1) * s.rough;
+    h += n(x * 0.0058 + 917.1) * s.rough * 1.35;
     h += Math.sin(x * 0.00105 + s.seed * 0.001) * s.amp * 0.16;
     h += n.fbm(x * 0.0034 + 57.3, 2) * s.amp * 0.13;
+    /* the further you drive, the nastier the surface gets */
+    var hard = 1 + BR.clamp((x - 1600) / 22000, 0, 0.65);
     var flat = BR.clamp((x - 80) / 520, 0, 1);
-    h *= flat;
+    h *= flat * hard;
     return h;
   };
 
   Terrain.prototype.slopeAt = function (x) {
     return (this.heightAt(x + 3) - this.heightAt(x - 3)) / 6;
+  };
+
+  /* pick the flattest spot in a chunk so fuel cans are easy to grab */
+  Terrain.prototype._flatSpot = function (rng, x0, width) {
+    var bestX = x0 + width * 0.5;
+    var bestSlope = Infinity;
+    for (var i = 0; i < 9; i++) {
+      var x = x0 + 90 + rng() * (width - 180);
+      var sl = Math.abs(this.slopeAt(x));
+      if (sl < bestSlope) { bestSlope = sl; bestX = x; }
+    }
+    return bestX;
   };
 
   Terrain.prototype._buildChunk = function (idx) {
@@ -166,9 +180,9 @@
       }
     }
 
-    /* fuel cans every 4th chunk */
-    if (idx > 0 && idx % 4 === 0) {
-      var fx = x0 + 120 + rng() * (CHUNK_W - 240);
+    /* fuel cans spaced out (every 3rd chunk) on flat ground */
+    if (idx > 0 && idx % 3 === 0) {
+      var fx = this._flatSpot(rng, x0, CHUNK_W);
       var fy = this.heightAt(fx);
       var can = { x: fx, y: fy - 20, r: 19, alive: true, chunk: idx, bob: rng() * BR.TAU };
       chunk.fuel.push(can);

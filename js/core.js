@@ -389,7 +389,7 @@
       if (!can.alive) continue;
       if (Math.abs(can.x - cx) < 38 && Math.abs(can.y - cy) < 52) {
         can.alive = false;
-        run.fuel = Math.min(100, run.fuel + 42);
+        run.fuel = Math.min(100, run.fuel + 38);
         A.particles.sparkle(can.x, can.y, 12, "#8ef0c0");
         A.audio.fuel();
         A.showToast("+FUEL");
@@ -423,8 +423,8 @@
     Engine.update(A.engine, dt * 1000);
     car.update(dt, terr);
 
-    /* fuel */
-    var drain = gas ? 1.45 : (brake ? 0.42 : 0.32);
+    /* fuel - burns fast so runs stay short and tense */
+    var drain = gas ? 2.5 : (brake ? 0.85 : 0.58);
     run.fuel = BR.clamp(run.fuel - drain * dt, 0, 100);
     if (run.fuel <= 0) {
       run.emptyTimer += dt;
